@@ -149,7 +149,7 @@ class RandomWordsState extends State<RandomWords> {
       itemBuilder: /*context와 index 전달*/ (context, i) {
         if (i.isOdd) return Divider(); /*material divider return*/
 
-        final index = i ~/ 2; /*divider아닌 row 생성*/
+        final index = i ~/ 2; /*divider아닌 row 생성, a~/b는 연산자는 (a / b).truncate().toInt()와 같다*/
         if (index >= _suggestions.length) {
           _suggestions.addAll(generateWordPairs().take(10)); /*더 단어를 생성해야 하는 경우 10개 추가*/
         }
@@ -167,3 +167,61 @@ class RandomWordsState extends State<RandomWords> {
   }
 }
 ```
+
+**step5** 선호 유무를 나타내는 버튼을 row에 추가
+* set과 list의 차이
+    * list은 우리가 알고있는 배열과 동일
+    * set은 모든 요소가 서로 다르다, positional Access가 불가능(ordered의 유무는 implementation에 따라 달라짐)
+        ```dart
+        * bool Set.contains(Object value)
+            //returns true if value is in the set
+        ```
+* ListTile
+  ```dart
+  * void Function() onTap
+    //Called when the user taps this list tile.
+    //Inoperative if [enabled] is false.
+  * Widget trailing
+    /*Title 다음에 표기하는 Widget.
+    Typically an [Icon] widget.
+    To show right-aligned metadata (assuming left-to-right reading order; left-aligned for right-to-left reading order), consider using a [Row] with [MainAxisAlign.baseline] alignment whose first item is [Expanded] and whose second child is the metadata text, instead of using the [trailing] property.
+    */
+  ```
+
+**step 6** 새로운 screen으로 navigate
+```dart
+  void _pushSaved() {
+      Navigator.of(context).push( //Navigator Stack에 push
+      MaterialPageRoute<void>(   // Add 20 lines from here...
+      builder: (BuildContext context) {
+        final Iterable<ListTile> tiles = _saved.map(  //A collection of values, or "elements", that can be accessed sequentially.
+          (WordPair pair) {
+            return ListTile(
+              title: Text(
+                pair.asPascalCase,
+                style: _biggerFont,
+              ),
+            );
+          },
+        );
+        final List<Widget> divided = ListTile
+          .divideTiles(
+            // tile 사이에 1pixel border 추가. If color isn't specified the [ThemeData.dividerColor] of the context's [Theme] is used.
+            context: context,
+            tiles: tiles,
+          )
+          .toList();
+        return Scaffold(         // Add 6 lines from here...
+          appBar: AppBar(
+            title: Text('Saved Suggestions'),
+          ),
+          body: ListView(children: divided),
+        );
+      },
+    ),
+    );
+  
+```
+
+**step7** Change the UI using Themes
+* ThemeData는 css의 비슷한 역할을 하는듯...? *뭐가 편해진건지 모르겠다..*
