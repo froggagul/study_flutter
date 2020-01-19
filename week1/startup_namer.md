@@ -46,6 +46,7 @@
 
   LM Q925S • (중략) • android-arm64 • Android 8.1.0 (API 27)
   ```
+  - 디바이스가 연결이 되지 않는다면 그 케이블은 앞으로 충전만 할 수 있게 하자 ^&^ *삽질 2시간 했어.. 짜증나..*
 
 4. Android Emulator 설정
   - vm acceleration 허용 [vm acceleration-window](https://developer.android.com/studio/run/emulator-acceleration#vm-windows)
