@@ -30,6 +30,7 @@ class Home extends StatelessWidget {
   }
 }
 
+//game layout 부분
 class Game extends StatefulWidget{
   @override
   State<StatefulWidget> createState() => GameState();
@@ -41,12 +42,19 @@ class GameState extends State<Game> {
     return Column(
       children: <Widget>[
         Container(
+          /**
+           * snake가 돌아다닐 공간
+           */
           width: 500,
           height: 500,
           margin: EdgeInsets.all(29),
-          color: Colors.green[200], 
+          color: Colors.green[200],
+          child: snake(positions: [[2,2],[2,3],[2,4]]),
         ),
         Container(
+          /**
+           * button 부분
+           */
           width: 500,
           height: 100,
           margin: EdgeInsets.all(29),
@@ -115,4 +123,30 @@ class GameState extends State<Game> {
       ],
     );
   }
+}
+
+Widget snake({List positions}) {
+  List<AnimatedPositioned> snakePositioned = List();
+  positions.forEach((item){
+    snakePositioned.add(
+      AnimatedPositioned(
+        left: item[0].toDouble()*25,
+        top: item[1].toDouble()*25,
+        child:Container(
+          width: 25,
+          height: 25,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        duration: Duration(seconds: 1),
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+  });
+
+  return Stack(
+    children: snakePositioned
+  );
 }
