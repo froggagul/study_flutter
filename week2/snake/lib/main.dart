@@ -37,6 +37,8 @@ class Game extends StatefulWidget{
 }
 
 class GameState extends State<Game> {
+  var positions=[[0,0],[2,3],[11,19]];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -45,11 +47,11 @@ class GameState extends State<Game> {
           /**
            * snake가 돌아다닐 공간
            */
-          width: 500,
+          width: 300,
           height: 500,
           margin: EdgeInsets.all(29),
           color: Colors.green[200],
-          child: snake(positions: [[2,2],[2,3],[2,4]]),
+          child: snake(positions: positions),
         ),
         Container(
           /**
@@ -117,6 +119,22 @@ class GameState extends State<Game> {
                   child: Icon(Icons.keyboard_arrow_down),
                 ),
               ),
+              Positioned(
+                right: 20,
+                top: 25,
+                width: 100,
+                height: 50,
+                child: Center(
+                  child: Text(
+                    "level "+positions.length.toString(),
+                    style: TextStyle(
+                      // fontFamily: 뭐로하지
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              )
             ],
           )
         ),
