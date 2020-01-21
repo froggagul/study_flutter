@@ -39,6 +39,96 @@ class Game extends StatefulWidget{
 class GameState extends State<Game> {
   var positions=[[0,0],[2,3],[11,19]];
 
+  Widget button(){
+    return(
+      Container(
+        /**
+         * button 부분
+         */
+        width: 500,
+        height: 100,
+        margin: EdgeInsets.all(29),
+        color: Colors.amber[50], 
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              top: 25,
+              left: 10,
+              width:60,
+              height:50,
+              child: FlatButton(
+                color: Colors.blue[200],
+                onPressed: (){
+                  /* left방향 state */
+                  debugPrint("left");
+                },
+                child: Icon(Icons.keyboard_arrow_left),
+              ),
+            ),
+            Positioned(
+              top: 10,
+              left: 80,
+              width:60,
+              height:37.5,
+              child: FlatButton(
+                color: Colors.blue[200],
+                onPressed: (){
+                  /* up 방향 state */
+                  debugPrint("up");
+                },
+                child: Icon(Icons.keyboard_arrow_up),
+              ),
+            ),
+            Positioned(
+              top: 25,
+              left: 150,
+              width:60,
+              height:50,
+              child: FlatButton(
+                color: Colors.blue[200],
+                onPressed: (){
+                  /* left방향 state */
+                  debugPrint("right");
+                },
+                child: Icon(Icons.keyboard_arrow_right),
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              left: 80,
+              width:60,
+              height:37.5,
+              child: FlatButton(
+                color: Colors.blue[200],
+                onPressed: (){
+                  /* left방향 state */
+                  debugPrint("down");
+                },
+                child: Icon(Icons.keyboard_arrow_down),
+              ),
+            ),
+            Positioned(
+              right: 20,
+              top: 25,
+              width: 100,
+              height: 50,
+              child: Center(
+                child: Text(
+                  "level "+positions.length.toString(),
+                  style: TextStyle(
+                    // fontFamily: 뭐로하지
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            )
+          ],
+        )
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -53,91 +143,7 @@ class GameState extends State<Game> {
           color: Colors.green[200],
           child: snake(positions: positions),
         ),
-        Container(
-          /**
-           * button 부분
-           */
-          width: 500,
-          height: 100,
-          margin: EdgeInsets.all(29),
-          color: Colors.amber[50], 
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 25,
-                left: 10,
-                width:60,
-                height:50,
-                child: FlatButton(
-                  color: Colors.blue[200],
-                  onPressed: (){
-                    /* left방향 state */
-                    debugPrint("left");
-                  },
-                  child: Icon(Icons.keyboard_arrow_left),
-                ),
-              ),
-              Positioned(
-                top: 10,
-                left: 80,
-                width:60,
-                height:37.5,
-                child: FlatButton(
-                  color: Colors.blue[200],
-                  onPressed: (){
-                    /* up 방향 state */
-                    debugPrint("up");
-                  },
-                  child: Icon(Icons.keyboard_arrow_up),
-                ),
-              ),
-              Positioned(
-                top: 25,
-                left: 150,
-                width:60,
-                height:50,
-                child: FlatButton(
-                  color: Colors.blue[200],
-                  onPressed: (){
-                    /* left방향 state */
-                    debugPrint("right");
-                  },
-                  child: Icon(Icons.keyboard_arrow_right),
-                ),
-              ),
-              Positioned(
-                bottom: 10,
-                left: 80,
-                width:60,
-                height:37.5,
-                child: FlatButton(
-                  color: Colors.blue[200],
-                  onPressed: (){
-                    /* left방향 state */
-                    debugPrint("down");
-                  },
-                  child: Icon(Icons.keyboard_arrow_down),
-                ),
-              ),
-              Positioned(
-                right: 20,
-                top: 25,
-                width: 100,
-                height: 50,
-                child: Center(
-                  child: Text(
-                    "level "+positions.length.toString(),
-                    style: TextStyle(
-                      // fontFamily: 뭐로하지
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-              )
-            ],
-          )
-        ),
+        button(),
       ],
     );
   }
