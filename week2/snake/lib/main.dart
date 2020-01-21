@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
 
+enum CurrentGame {
+  initial,
+  onGame,
+  fail
+}
+enum SnakeState {
+  up,
+  down,
+  left,
+  right
+}
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -37,96 +49,164 @@ class Game extends StatefulWidget{
 }
 
 class GameState extends State<Game> {
-  var positions=[[0,0],[2,3],[11,19]];
+  var positions=[[0,0],[0,1],[0,2]];
+  var currentGame=CurrentGame.initial;
+  var snakeState=SnakeState.down;
 
-  Widget button(){
+  void startGame(){
+    setState(() {
+      positions=[[0,0],[0,1],[0,2]];
+    });
+  }
+
+  Widget buttonBar(){
     return(
-      Container(
-        /**
-         * button 부분
-         */
-        width: 500,
-        height: 100,
-        margin: EdgeInsets.all(29),
-        color: Colors.amber[50], 
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              top: 25,
-              left: 10,
-              width:60,
-              height:50,
-              child: FlatButton(
-                color: Colors.blue[200],
-                onPressed: (){
-                  /* left방향 state */
-                  debugPrint("left");
-                },
-                child: Icon(Icons.keyboard_arrow_left),
-              ),
-            ),
-            Positioned(
-              top: 10,
-              left: 80,
-              width:60,
-              height:37.5,
-              child: FlatButton(
-                color: Colors.blue[200],
-                onPressed: (){
-                  /* up 방향 state */
-                  debugPrint("up");
-                },
-                child: Icon(Icons.keyboard_arrow_up),
-              ),
-            ),
-            Positioned(
-              top: 25,
-              left: 150,
-              width:60,
-              height:50,
-              child: FlatButton(
-                color: Colors.blue[200],
-                onPressed: (){
-                  /* left방향 state */
-                  debugPrint("right");
-                },
-                child: Icon(Icons.keyboard_arrow_right),
-              ),
-            ),
-            Positioned(
-              bottom: 10,
-              left: 80,
-              width:60,
-              height:37.5,
-              child: FlatButton(
-                color: Colors.blue[200],
-                onPressed: (){
-                  /* left방향 state */
-                  debugPrint("down");
-                },
-                child: Icon(Icons.keyboard_arrow_down),
-              ),
-            ),
-            Positioned(
-              right: 20,
-              top: 25,
-              width: 100,
-              height: 50,
-              child: Center(
-                child: Text(
-                  "level "+positions.length.toString(),
-                  style: TextStyle(
-                    // fontFamily: 뭐로하지
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      Column(
+        children: <Widget>[
+          Container(
+            /**
+             * button 부분
+             */
+            width: 500,
+            height: 100,
+            margin: EdgeInsets.all(9),
+            color: Colors.amber[50], 
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  top: 25,
+                  left: 10,
+                  width:60,
+                  height:50,
+                  child: FlatButton(
+                    color: Colors.blue[200],
+                    onPressed: (){
+                      debugPrint("left");
+                      setState(() {
+                        snakeState=SnakeState.left;
+                      });
+                    },
+                    child: Icon(Icons.keyboard_arrow_left),
                   ),
                 ),
-              )
+                Positioned(
+                  top: 10,
+                  left: 80,
+                  width:60,
+                  height:37.5,
+                  child: FlatButton(
+                    color: Colors.blue[200],
+                    onPressed: (){
+                      debugPrint("up");
+                      setState(() {
+                        snakeState=SnakeState.up;
+                      });
+                    },
+                    child: Icon(Icons.keyboard_arrow_up),
+                  ),
+                ),
+                Positioned(
+                  top: 25,
+                  left: 150,
+                  width:60,
+                  height:50,
+                  child: FlatButton(
+                    color: Colors.blue[200],
+                    onPressed: (){
+                      debugPrint("right");
+                      setState(() {
+                        snakeState=SnakeState.right;
+                      });
+                    },
+                    child: Icon(Icons.keyboard_arrow_right),
+                  ),
+                ),
+                Positioned(
+                  bottom: 10,
+                  left: 80,
+                  width:60,
+                  height:37.5,
+                  child: FlatButton(
+                    color: Colors.blue[200],
+                    onPressed: (){
+                      debugPrint("down");
+                      setState(() {
+                        snakeState=SnakeState.down;
+                      });
+                    },
+                    child: Icon(Icons.keyboard_arrow_down),
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  top: 25,
+                  width: 100,
+                  height: 50,
+                  child: Center(
+                    child: Text(
+                      "level "+positions.length.toString(),
+                      style: TextStyle(
+                        // fontFamily: 뭐로하지
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                ),
+              ],
             )
-          ],
-        )
+          ),
+          Container(
+            width: 500,
+            height: 75,
+            color: Colors.amber[50],
+            margin: const EdgeInsets.only(top: 100),
+            child: FlatButton(
+              color: Colors.red[50],
+              onPressed: (){
+                debugPrint("start/restart");
+                setState(() {
+                  if (currentGame==CurrentGame.onGame) {
+                    currentGame=CurrentGame.initial;
+                    // 이후 initial로 바꾸기
+                    // return;
+                  } else{
+                    currentGame=CurrentGame.onGame;
+                    startGame();
+                  }
+                });
+              },
+              child: startText(),
+            ),
+          )
+        ],
       )
     );
+  }
+
+  Widget startText() {
+    if (currentGame == CurrentGame.initial) {
+      return Text(
+                "start",
+                style: TextStyle(
+                  fontSize: 20
+                ),
+              );
+    } else if (currentGame == CurrentGame.fail) {
+      return Text(
+                "restart",
+                style: TextStyle(
+                  fontSize: 20
+                ),
+              );
+    } else {
+      return Text(
+                "gaming..",
+                style: TextStyle(
+                  fontSize: 20
+                ),
+              );
+    }
   }
 
   @override
@@ -137,13 +217,13 @@ class GameState extends State<Game> {
           /**
            * snake가 돌아다닐 공간
            */
-          width: 300,
-          height: 500,
-          margin: EdgeInsets.all(29),
+          width: 375,
+          height: 375,
+          margin: EdgeInsets.all(10),
           color: Colors.green[200],
           child: snake(positions: positions),
         ),
-        button(),
+        buttonBar(),
       ],
     );
   }
