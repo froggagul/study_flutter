@@ -39,7 +39,7 @@ class Home extends StatelessWidget {
         centerTitle: true,
       ),
       body: Game(),
-      backgroundColor: Colors.pink[100],
+      backgroundColor: Color.fromRGBO(255,204,209,1),
     );
   }
 }
@@ -56,9 +56,42 @@ class GameState extends State<Game> {
   List<int> pointPositions=[5,5];
   var currentGame=CurrentGame.initial;
   var snakeState=SnakeState.down;
-  double maxWidth= 325;
-  double maxHeight= 325;
+
+  double maxWidth= 200;
+  double maxHeight= 200;
   
+  Size screenSize(BuildContext context) {
+    return MediaQuery.of(context).size;
+  }
+  double screenHeight(BuildContext context, {double dividedBy = 1}) {
+    return screenSize(context).height / dividedBy;
+  }
+  double screenWidth(BuildContext context, {double dividedBy = 1}) {
+    return screenSize(context).width / dividedBy;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    maxWidth= screenWidth(context, dividedBy: 1.25)~/25*25.toDouble();
+    maxHeight= screenHeight(context, dividedBy: 2)~/25*25.toDouble();
+
+    return Column(
+      children: <Widget>[
+        Container(
+          /**
+           * snake가 돌아다닐 공간
+           */
+          width: maxWidth,
+          height: maxHeight,
+          margin: EdgeInsets.only(top:10),
+          color: Colors.green[200],
+          child: snake(positions: positions, pointPositions:pointPositions),
+        ),
+        buttonBar(context),
+      ],
+    );
+  }
+
   /// 전달받은 좌표가 뱀이 있는 좌표가 아닌지 판단
   bool isValidPoint(int x, int y) {
     int length = positions.length;
@@ -148,7 +181,7 @@ class GameState extends State<Game> {
     if(head[0] == pointPositions[0] && head[1] == pointPositions[1]) return true;
     return false;
   }
-
+  ///초기 위치로 뱀 이동
   void resetGame(){
     setState(() {
       currentGame=CurrentGame.initial;
@@ -157,7 +190,7 @@ class GameState extends State<Game> {
       pointPositions=genPoints();
     });
   }
-
+  ///game reset후 game 시작
   void startGame(){
     resetGame();
     setState(() {
@@ -181,7 +214,9 @@ class GameState extends State<Game> {
       });
   }
 
-  Widget buttonBar(){
+  Widget buttonBar(BuildContext context){
+    double height = screenHeight(context, dividedBy:5);
+    double width = screenWidth(context, dividedBy: 1);
     return(
       Column(
         children: <Widget>[
@@ -189,19 +224,19 @@ class GameState extends State<Game> {
             /**
              * button 부분
              */
-            width: 500,
-            height: 100,
+            width: width,
+            height: height,
             margin: EdgeInsets.all(9),
             color: Colors.amber[50], 
             child: Stack(
               children: <Widget>[
                 Positioned(
-                  top: 25,
+                  top: height/4,
                   left: 10,
                   width:60,
-                  height:50,
+                  height:height/2,
                   child: FlatButton(
-                    color: Colors.blue[200],
+                    color: Colors.blue[100],
                     onPressed: (){
                       debugPrint("left");
                       setState(() {
@@ -212,14 +247,14 @@ class GameState extends State<Game> {
                   ),
                 ),
                 Positioned(
-                  top: 10,
+                  top: height/8,
                   left: 80,
                   width:60,
-                  height:37.5,
+                  height:height/3,
                   child: FlatButton(
-                    color: Colors.blue[200],
+                    color: Colors.blue[100],
                     onPressed: (){
-                      debugPrint("up");
+                      debugPrint(maxWidth.toString());
                       setState(() {
                         snakeState=SnakeState.up;
                       });
@@ -228,12 +263,12 @@ class GameState extends State<Game> {
                   ),
                 ),
                 Positioned(
-                  top: 25,
+                  top: height/4,
                   left: 150,
                   width:60,
-                  height:50,
+                  height:height/2,
                   child: FlatButton(
-                    color: Colors.blue[200],
+                    color: Colors.blue[100],
                     onPressed: (){
                       debugPrint("right");
                       setState(() {
@@ -244,12 +279,12 @@ class GameState extends State<Game> {
                   ),
                 ),
                 Positioned(
-                  bottom: 10,
+                  bottom: height/8,
                   left: 80,
                   width:60,
-                  height:37.5,
+                  height:height/3,
                   child: FlatButton(
-                    color: Colors.blue[200],
+                    color: Colors.blue[100],
                     onPressed: (){
                       debugPrint("down");
                       setState(() {
@@ -260,10 +295,10 @@ class GameState extends State<Game> {
                   ),
                 ),
                 Positioned(
-                  right: 20,
+                  right: 10,
                   top: 25,
-                  width: 100,
-                  height: 50,
+                  width: width/3,
+                  height: height/2,
                   child: Center(
                     child: Text(
                       "level "+positions.length.toString(),
@@ -279,10 +314,9 @@ class GameState extends State<Game> {
             )
           ),
           Container(
-            width: 500,
-            height: 75,
+            width: width,
+            height: height/2,
             color: Colors.amber[50],
-            margin: const EdgeInsets.only(top: 100),
             child: FlatButton(
               color: Colors.red[50],
               onPressed: (){
@@ -305,7 +339,6 @@ class GameState extends State<Game> {
       )
     );
   }
-
   Widget startText() {
     if (currentGame == CurrentGame.initial) {
       return Text(
@@ -331,24 +364,8 @@ class GameState extends State<Game> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          /**
-           * snake가 돌아다닐 공간
-           */
-          width: maxWidth,
-          height: maxHeight,
-          margin: EdgeInsets.all(10),
-          color: Colors.green[200],
-          child: snake(positions: positions, pointPositions:pointPositions),
-        ),
-        buttonBar(),
-      ],
-    );
-  }
+
+
 }
 
 Widget snake({List<List<int>> positions, List<int> pointPositions}) {
