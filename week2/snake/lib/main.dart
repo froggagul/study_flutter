@@ -52,6 +52,7 @@ class Game extends StatefulWidget{
 
 class GameState extends State<Game> {
   List<List<int>> positions=[[0,0],[0,1],[0,2]];
+  List<int> prePositions=[0,0]; //전 단계에서 뱀의 꼬리 좌표
   List<int> pointPositions=[5,5];
   var currentGame=CurrentGame.initial;
   var snakeState=SnakeState.down;
@@ -84,6 +85,7 @@ class GameState extends State<Game> {
   void moveSnake(){
     List<List<int>> temp=[];
     var length = positions.length;
+    prePositions=positions[0]; //꼬리 위치 기억
     for (var i = 1; i < length; i++) {
       temp.add(positions[i]);
     }
@@ -109,6 +111,20 @@ class GameState extends State<Game> {
       positions=temp;
     });
   }
+  /// 뱀의 먹이를 먹었을때 뱀의 행동 정의, 뱀을 전 state로 미룬뒤, 현재 먹이 위치 추가
+  void addSnake(){
+    List<List<int>> temp=[];
+    var length = positions.length;
+    temp.add(prePositions);
+    for (var i = 0; i < length-1; i++) {
+      temp.add(positions[i]);
+    }
+    temp.add(pointPositions);
+    setState(() {
+      positions=temp;
+      pointPositions=genPoints();
+    });
+  }
 
   /// 뱀이 자신과 부딫혔는지, 맵 밖으로 나갔는지 체크, 
   /// 둘중 해당되는 사항이 있으면 true 반환
@@ -122,6 +138,13 @@ class GameState extends State<Game> {
       if (positions[i][0]==head[0] && positions[i][1]==head[1]) return true;
     }
     
+    return false;
+  }
+  /// 뱀의 머리와 뱀의 먹이가 같은 좌표에 있는지 판단, 같으면 true 반환
+  bool checkPoint(){
+    var length = positions.length;
+    var head = positions[length-1];
+    if(head[0] == pointPositions[0] && head[1] == pointPositions[1]) return true;
     return false;
   }
 
@@ -138,7 +161,11 @@ class GameState extends State<Game> {
           });
           timer.cancel();
         } else {
-          moveSnake();
+          if (checkPoint()) {
+            addSnake();
+          } else{
+            moveSnake();
+          }
         }
         
       });
