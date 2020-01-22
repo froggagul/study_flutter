@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 enum CurrentGame {
   initial,
@@ -53,10 +54,52 @@ class GameState extends State<Game> {
   var currentGame=CurrentGame.initial;
   var snakeState=SnakeState.down;
 
+  void moveSnake(){
+    List<List<int>> temp=[];
+    var length = positions.length;
+    for (var i = 1; i < length; i++) {
+      temp.add(positions[i]);
+    }
+    var lastHead=positions[length-1];
+
+    switch (snakeState) {
+      case SnakeState.down:
+        temp.add([lastHead[0],lastHead[1]+1]);
+        break;
+      case SnakeState.up:
+        temp.add([lastHead[0],lastHead[1]-1]);
+        break;
+      case SnakeState.left:
+        temp.add([lastHead[0]-1,lastHead[1]]);
+        break;
+      case SnakeState.right:
+        temp.add([lastHead[0]+1,lastHead[1]]);
+        break;
+      default:
+    }
+
+    setState(() {
+      positions=temp;
+    });
+  }
+
   void startGame(){
     setState(() {
       positions=[[0,0],[0,1],[0,2]];
     });
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+        // 사과 생성
+        if (1 == 2) {
+          // 맵 밖으로 나가거나 자신과 충돌시
+          setState(() {
+            currentGame=CurrentGame.fail;
+          });
+          timer.cancel();
+        } else if ( 1 == 2) {
+          // 사과 먹으면 뱀 길이 추가
+        }
+        moveSnake();
+      });
   }
 
   Widget buttonBar(){
@@ -168,7 +211,7 @@ class GameState extends State<Game> {
                 setState(() {
                   if (currentGame==CurrentGame.onGame) {
                     currentGame=CurrentGame.initial;
-                    // 이후 initial로 바꾸기
+                    // 이후 못누르게 바꾸기
                     // return;
                   } else{
                     currentGame=CurrentGame.onGame;
