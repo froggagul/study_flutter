@@ -50,10 +50,14 @@ class Game extends StatefulWidget{
 }
 
 class GameState extends State<Game> {
-  var positions=[[0,0],[0,1],[0,2]];
+  List<List<int>> positions=[[0,0],[0,1],[0,2]];
   var currentGame=CurrentGame.initial;
   var snakeState=SnakeState.down;
+  double maxWidth= 325;
+  double maxHeight= 325;
 
+
+  /// snakeState에 따라 뱀 이동
   void moveSnake(){
     List<List<int>> temp=[];
     var length = positions.length;
@@ -83,22 +87,37 @@ class GameState extends State<Game> {
     });
   }
 
+  /// 뱀이 자신과 부딫혔는지, 맵 밖으로 나갔는지 체크, 
+  /// 둘중 해당되는 사항이 있으면 true 반환
+  bool checkSnake(){
+    var length = positions.length;
+    var head = positions[length-1];
+    
+    if (head[0]<0 || head[1]<0) return true;
+    if (head[0]>=maxWidth/25 || head[1]>=maxHeight/25) return true;
+    for (var i = 0; i < length-1; i++) {
+      if (positions[i][0]==head[0] && positions[i][1]==head[1]) return true;
+    }
+    
+    return false;
+  }
+
   void startGame(){
     setState(() {
       positions=[[0,0],[0,1],[0,2]];
     });
     Timer.periodic(const Duration(seconds: 1), (timer) {
         // 사과 생성
-        if (1 == 2) {
+        if (checkSnake()) {
           // 맵 밖으로 나가거나 자신과 충돌시
           setState(() {
             currentGame=CurrentGame.fail;
           });
           timer.cancel();
-        } else if ( 1 == 2) {
-          // 사과 먹으면 뱀 길이 추가
+        } else {
+          moveSnake();
         }
-        moveSnake();
+        
       });
   }
 
@@ -260,8 +279,8 @@ class GameState extends State<Game> {
           /**
            * snake가 돌아다닐 공간
            */
-          width: 375,
-          height: 375,
+          width: maxWidth,
+          height: maxHeight,
           margin: EdgeInsets.all(10),
           color: Colors.green[200],
           child: snake(positions: positions),
