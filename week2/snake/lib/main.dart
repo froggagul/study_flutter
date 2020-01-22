@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math';
 
 enum CurrentGame {
   initial,
@@ -51,11 +52,33 @@ class Game extends StatefulWidget{
 
 class GameState extends State<Game> {
   List<List<int>> positions=[[0,0],[0,1],[0,2]];
+  List<int> pointPositions=[5,5];
   var currentGame=CurrentGame.initial;
   var snakeState=SnakeState.down;
   double maxWidth= 325;
   double maxHeight= 325;
 
+  bool isValidPoint(int x, int y) {
+    int length = positions.length;
+    for (var i = 0; i < length; i++) {
+      if (positions[i][0]==x && positions[i][1]==y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  List<int> genPoints() {
+    int maxX=maxWidth~/25;
+    int maxY=maxHeight~/25;
+    int x = Random().nextInt(maxX);
+    int y = Random().nextInt(maxY);
+    while (isValidPoint(x, y)) {
+      x = Random().nextInt(maxX);
+      y = Random().nextInt(maxY);
+    }
+    return [x,y];
+  }
 
   /// snakeState에 따라 뱀 이동
   void moveSnake(){
@@ -105,9 +128,9 @@ class GameState extends State<Game> {
   void startGame(){
     setState(() {
       positions=[[0,0],[0,1],[0,2]];
+      pointPositions=genPoints();
     });
     Timer.periodic(const Duration(seconds: 1), (timer) {
-        // 사과 생성
         if (checkSnake()) {
           // 맵 밖으로 나가거나 자신과 충돌시
           setState(() {
@@ -283,7 +306,7 @@ class GameState extends State<Game> {
           height: maxHeight,
           margin: EdgeInsets.all(10),
           color: Colors.green[200],
-          child: snake(positions: positions),
+          child: snake(positions: positions, pointPositions:pointPositions),
         ),
         buttonBar(),
       ],
@@ -291,7 +314,7 @@ class GameState extends State<Game> {
   }
 }
 
-Widget snake({List positions}) {
+Widget snake({List<List<int>> positions, List<int> pointPositions}) {
   List<AnimatedPositioned> snakePositioned = List();
   positions.forEach((item){
     snakePositioned.add(
@@ -311,8 +334,24 @@ Widget snake({List positions}) {
       ),
     );
   });
+  snakePositioned.add(
+    AnimatedPositioned(
+      left: pointPositions[0].toDouble()*25,
+      top: pointPositions[1].toDouble()*25,
+      child: Container(
+        width: 25,
+        height: 25,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      duration: Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    ),
+  );
 
   return Stack(
-    children: snakePositioned
+    children: snakePositioned, 
   );
 }
