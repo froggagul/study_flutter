@@ -58,7 +58,8 @@ class GameState extends State<Game> {
   var snakeState=SnakeState.down;
   double maxWidth= 325;
   double maxHeight= 325;
-
+  
+  /// 전달받은 좌표가 뱀이 있는 좌표가 아닌지 판단
   bool isValidPoint(int x, int y) {
     int length = positions.length;
     for (var i = 0; i < length; i++) {
@@ -68,7 +69,7 @@ class GameState extends State<Game> {
     }
     return false;
   }
-
+  /// [x,y] 형태의 먹이 좌표 반환
   List<int> genPoints() {
     int maxX=maxWidth~/25;
     int maxY=maxHeight~/25;
@@ -148,12 +149,21 @@ class GameState extends State<Game> {
     return false;
   }
 
-  void startGame(){
+  void resetGame(){
     setState(() {
+      currentGame=CurrentGame.initial;
+      snakeState=SnakeState.down;
       positions=[[0,0],[0,1],[0,2]];
       pointPositions=genPoints();
     });
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+  }
+
+  void startGame(){
+    resetGame();
+    setState(() {
+      currentGame=CurrentGame.onGame;
+    });
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
         if (checkSnake()) {
           // 맵 밖으로 나가거나 자신과 충돌시
           setState(() {
@@ -276,15 +286,15 @@ class GameState extends State<Game> {
             child: FlatButton(
               color: Colors.red[50],
               onPressed: (){
-                debugPrint("start/restart");
+                debugPrint("start/reset");
                 setState(() {
                   if (currentGame==CurrentGame.onGame) {
-                    currentGame=CurrentGame.initial;
-                    // 이후 못누르게 바꾸기
-                    // return;
-                  } else{
+                    return;
+                  } else if(currentGame==CurrentGame.initial) {
                     currentGame=CurrentGame.onGame;
                     startGame();
+                  }  else {
+                    resetGame();
                   }
                 });
               },
@@ -306,7 +316,7 @@ class GameState extends State<Game> {
               );
     } else if (currentGame == CurrentGame.fail) {
       return Text(
-                "restart",
+                "reset",
                 style: TextStyle(
                   fontSize: 20
                 ),
@@ -356,7 +366,7 @@ Widget snake({List<List<int>> positions, List<int> pointPositions}) {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        duration: Duration(seconds: 1),
+        duration: Duration(milliseconds: 500),
         curve: Curves.fastOutSlowIn,
       ),
     );
@@ -373,7 +383,7 @@ Widget snake({List<List<int>> positions, List<int> pointPositions}) {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      duration: Duration(seconds: 1),
+      duration: Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
     ),
   );
